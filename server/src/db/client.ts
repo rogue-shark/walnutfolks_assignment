@@ -1,13 +1,16 @@
 import 'dotenv/config';
 import { Pool } from 'pg';
 
-const needsSSL =
-  process.env.DATABASE_URL &&
-  /render\.com|neon\.tech|supabase\.co|aws/.test(process.env.DATABASE_URL);
+const dbUrl = process.env.DATABASE_URL ?? '';
 
 export const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: needsSSL ? { rejectUnauthorized: false } : undefined
+  connectionString: dbUrl,
+  // Render/Neon/Supabase externals want TLS; keepAlive avoids idle drops
+  ssl: { rejectUnauthorized: false },
+  keepAlive: true,
+  // sensible timeouts
+  connectionTimeoutMillis: 10000,
+  idleTimeoutMillis: 30000
 });
 
 export async function initDb() {
