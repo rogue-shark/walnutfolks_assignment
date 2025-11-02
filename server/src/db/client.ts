@@ -5,12 +5,16 @@ const dbUrl = process.env.DATABASE_URL ?? '';
 
 export const pool = new Pool({
   connectionString: dbUrl,
-  // Render/Neon/Supabase externals want TLS; keepAlive avoids idle drops
-  ssl: { rejectUnauthorized: false },
+  ssl: { rejectUnauthorized: false },     // external endpoints expect TLS
   keepAlive: true,
-  // sensible timeouts
+  keepAliveInitialDelayMillis: 10000,
   connectionTimeoutMillis: 10000,
-  idleTimeoutMillis: 30000
+  idleTimeoutMillis: 30000,
+  max: 10
+});
+
+pool.on('error', (err) => {
+  console.error('[pg pool error]', err);
 });
 
 export async function initDb() {
