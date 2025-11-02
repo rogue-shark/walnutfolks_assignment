@@ -1,10 +1,7 @@
-import { Router } from 'express';
+import { Router, Request, Response } from 'express';
 
 export const health = Router();
 
-health.get('/', (req, res) => {
-  res.json({
-    status: 'HEALTHY',
-    current_time: new Date().toISOString()
-  });
+health.get('/', (req: Request, res: Response) => {
+  res.json({ status: 'HEALTHY', current_time: new Date().toISOString() });
 });
